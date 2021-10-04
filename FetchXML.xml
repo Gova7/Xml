@@ -1,0 +1,30 @@
+function AddCustomContractItemView(executionContext) {
+    var formContext = executionContext.getFormContext();
+    if (formContext.getAttribute("customerid").getValue() != null) {
+        var accountId = formContext.getAttribute("customerid").getValue()[0].id;
+        var viewId = "A0AABA52-C656-4ABB-A898-FE1F0D25E1AF";
+        var entity = "ap_contract_item";
+        var ViewDisplayName = "Contract Items";
+        var fetchXML = "<fetch version='1.0' output-format='xml-platform' mapping='logical' distinct='false'>" +
+            "<entity name = 'ap_contract_item' >" +
+            "<attribute name='ap_contract_item_id' />" +
+            "<attribute name='ap_name' />" +
+            "<attribute name='createdon' />" +
+            "<filter type='and'>" +
+            "<condition attribute='ap_financial_account' operator='not-null' />" +
+            "</filter>" +
+            "<order attribute='ap_contract_item_id' descending='false' />" +
+            "<link-entity name='ap_contract' from='ap_contractid' to='ap_parent_contract' link-type='inner' alias='aa'>" +
+            "<filter type='and'>" +
+            "<condition attribute='ap_customer' operator='eq' uitype='account' value='" + accountId + "' />" +
+            "</filter></link-entity></entity></fetch >";
+        var layout = "<grid name='resultset' jump='ap_contract_item_id' select='1' icon='1' preview='1'>" +
+            "<row name = 'result' id = 'ap_contract_itemid' >" +
+            "<cell name='ap_name' width='300' />" +
+            "<cell name='createdon' width='150' />" +
+            "</row></grid>";
+
+        formContext.getControl("vrp_attribute_contractitem").addCustomView(viewId, entity, ViewDisplayName, fetchXML, layout, true);
+        FilterCardFrameworkSubgrid(executionContext);
+    }
+}
